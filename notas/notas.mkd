@@ -1,0 +1,206 @@
+# Sección 1: Introducción a TypeScript
+
+## Introducción a TypeScript
+
+TypeScript (TS) toma todo lo de JS, su ESnext y algo más adicional.
+TS se transpila a JS... y luego esto se corre en la web.
+
+<!-- el termino correcto seria transpilar... ts se traduce a su sinonimo js -->
+
+## Instalaciones necesarias
+
+Extensiones VS Code
+
+-   TypeScript Importer: ayuda a poder realizar autoimportaciones rapidamente en TS
+
+Extensiones Chrome
+
+-   JSON Viewer Pro
+
+# Sección 2: Introducción a TypeScript
+
+## Instalación de TS
+
+Se pueden instalar solo (basado) por proyecto, o también de forma global.
+Instalar:
+
+-   Terminal > `npm install -g typescript`
+-   Verificar instalación y versión: `tsc -v`
+
+Los ejercicios de este curso se basan en la documentación oficial de TS: https://www.typescriptlang.org/docs/handbook/intro.html
+
+## Hola mundo en TS
+
+Transpila tu TS a JS así: terminal -> `tsc app` o `tsc app.ts`
+
+<!-- tsc significa TS compiled -->
+
+## TSconfig.json
+
+para crear dicho archivo:
+
+-   terminal -> `tsc --init`
+
+ese archivo muestran las configuraciones de TS
+
+-   la version a la cual se transpilara
+-   que tan estricto será (bastante por defecto), etc
+
+**al haber creado ese archivo ahora podemos hacer solo lo siguiente para poder compilar nuestro archivo js**
+
+-   terminal > `tsc`: transpilará el archivo ts, además usará la configuración del tsconfig
+
+## Modo observador - Watch Mode
+
+Este modo detecta cualquier archivo de ts que cambio y ejecutara la transpilacion de forma automatica (cada que solo guardes los cambios en tu archivo ts).
+
+-   terminal > `tsc -w` o `tsc --watch`
+
+<!-- puedes modificar libremente tu archivo JS -->
+
+## Tipos de datos
+
+primitivos: string, number, boolean, symbol
+compuestos: objetos literales, funciones, clases, arreglos
+
+## Más información sobre los tipos de datos
+
+https://www.typescriptlang.org/docs/handbook/2/everyday-types.html
+
+## Inferir tipos y modo estricto
+
+podemos dejar que TS infiera los tipos de datos PERO SE RECOMIENDA dejar en claro qué tipo de dato es
+
+si creas una variable let vacia (cosa que no se recomienda hacerlo), el tipo de dato será any
+
+también debes colcoar el tipo de dato al colocar argumentos a tus funciones
+
+<!-- colocar el tipo de dato también ayuda a vscode a desplegar los metodos correctos para ese tipo de dato -->
+
+# Sección 6: Depuración de errores y el archivo tsconfig.json
+
+ya viene con valores por defecto.
+para mas info: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+code "D:\Sebastian\OneDrive - UNIVERSIDAD NACIONAL DE INGENIERIA\03 Learn\Apuntes\Developer\001 En progreso\TypeScript - Tu completa guía y manual de mano"
+
+## ¿Es posible la depuración del código de TypeScript?
+
+<!-- * recuerda tener el `tsc -w` corriendo -->
+
+al hacer console log... la referencia que usa mi navegador es la del archivo transpilado de js, no el del ts...
+**como configuramos para que tome los rachivos TS?**
+
+-   en el tsconfig.son activa `"sourceMap": true,`: generara un 3er archivo .map -> es un mapa a la representacion propia que tiene nuestro codigo en TS.
+-   si regresas al navegador, ahora se hace referencia a los archivos de TS. si clickas en esta referencia te llevará al supuesto archivo .ts (que en realidad es la referencia al sourcemap)
+    -   en las definiciones propias de .ts (por ejemplo los type) no puedes hacer un breakpoint (el cursor para editar)... mientras que en las comunes de js sí
+-   si abres los archivos .js al final verás un comentario (que dice donde esta el source) el cual el navegador ve y por ello puede hacerse la interpretacion del codigo
+
+<!-- en produccion se pueden omitir esos sourceMap -->
+
+## Remover los comentarios de los archivos de JavaScript
+
+<!-- * recuerda tener el `tsc -w` corriendo -->
+
+los comentarios que colocas en los archivos TS (al transpilarlo) también se colocan en los archivos JS...
+
+**como quitamos los comentarios?**
+
+-   en el tsconfig.son activa `"removeComments": true,`: y ya no se mostraran tus comentarios en los archivos JS
+
+## Incluir y excluir carpetas y/o archivos
+
+algunas veces queremos que TS evite entrar a algunos directorios a realizar la transpilación...
+
+<!-- * en el caso de la carpeta node_modules, esta por ejemplo ya tiene una configuracion especial para evitar que TS entre ahí -->
+
+**excluyendo carpetas:**
+
+-   antes de la ultima "}" del ts config coloca tus carpetas o archivos:
+
+```typescript
+    ,
+    "exclude": ["./03-objetos/node_modules2"]
+```
+
+<!-- * quiza debas volver a iniciar de nuevo el `tsc -w` -->
+
+**incluyendo carpetas:**
+
+-   lo mismo pero con "include". lo agregas despues del "exclude"
+
+```typescript
+    ,
+    "include": ["./03-objetos/carpeta"]
+```
+
+<!-- ! recuerda que no debes incluir tu carpeta node_modules -->
+
+## outFile - Archivo de salida
+
+generalmente no queremos tener archivos flotando por ahi o desorden. como por ejemplo los .map
+
+usualmente lo que hacemos es juntar todo nuestros archivos TS en un solo archivo JS
+
+<!-- si trabajamos en algun framework como angular o react con TS, esto ya esta configurado automaticamente.
+porque se genera una carpeta de distribucion y webpack crea todo eso, etc. -->
+
+en nuestro proyecto actual no tenemos eso configurado...
+
+**como lo hacemos?**
+
+-   en el tsconfig.json activa el `"outFile": "./",`
+-   colocale el main.js para que quede asi: `"outFile": "./main.js",`
+
+-   te saldra un error: "solo los modulos amd y system soportan el outfile"
+-   por lo que debes cambiar el "module" de tu tsconfig.json para que quede así: `"module": "amd"`
+
+-   **si no te sale nada en el main.js** es porque incluiste carpetas con "include" en el tsconfig: por lo que tienes que comentar esa linea. y recien te saldrá.
+-   una vez hecho la correccion te saldra mucho codigo... y eso porque esta tomando TODOS los archivos que tengo y los está unificando. **es por ello que trabajamos con IFFE ()() -> para que no de error en esta parte**
+-   al haber hecho esto ya tenemos nuestro archivo de salida... por lo que ya podemos borrar los archivos transpilados -> tus .js y .map (menos los .ts)... (menos el de main.js .map y .ts pues)
+-   si vuelves a ejecutar `tsc -w` no se volverán a transpilar
+
+-   si tienes algun error de tipado por ejemplo en uno de tus archivos originales de .ts... entonces eso se mostrara también en la terminal y ademas en la consola del navegador
+
+# Sección 7: Caracteristicas de ES6 o JS2015 disponibles a través de TypeScript
+
+# Variables LET
+
+continuando con lo anterior. para que no me junte TODOS los archivos transpilados en el main.js... agrega tu carpeta 04-ES6 al "includes" de tsconfig.json
+
+```typescript
+    ,
+    "include": ["04-ES6"]
+```
+
+<!-- ! recuerda tener tu `tsc -w` corriendo -->
+
+de esta manera main.js (que también lo tienes en el script del index.html) solo tendrán los archivos de dicha carpeta... asi que continua trabajando
+
+# Sección 9: Interfaces
+
+## Interfaz básica
+
+si quieres sabe mas sobre la diferencia entre type e interface lee la doc de ts: https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces
+
+# Sección 10: NameSpaces
+
+## Inicio de proyecto - Módulos y Webpack
+
+basicamente descargamos un repo (https://github.com/Klerith/curso-typescript/tree/codigo-inicial) y inicializamos en npm i e iniciamos npm start para que nos cree el proyecto...
+**basicamente tenemos un proyecto de webpack para crear una app de frontend todo basado en typescript. es una configuracion personalizada que hizo el profe. para poder explicarnos mas cosas sobre typescript**... por lo que necesitamos un importador de modulos... esto generalmente en react u otros frameworks o librerias ya esta realizado por defecto.
+npm start en ese proyecto a parte ejecuta tu archivo ts y lo muestra en la consola
+
+## Sección 11: Genéricos - Generics
+
+paste json as interface: https://app.quicktype.io/
+
+## Sección 12: Decoradores
+
+**dificilmente se usan los decoradores**
+
+documentacion sobre decoradores: https://www.typescriptlang.org/docs/handbook/decorators.html
+
+LOS DECORADORES SON FUNCIONES QUE EXPANDEN LAS FUNCIONALIDADES DE OTRAS FUNCIONES. SE USAN PARA TENER MAS LEGIBILIDAD, SEAN FACIL DE LEER, ETC.
+// un decorador no es mas que una funcion que se ejecuta en el momento de transpilacion o compilacion del codigo
+
+## Sección 13: Usando librerías que no están escritas en TypeScript (como jQuery)
